@@ -54,6 +54,37 @@ function key(row, col, dir) {
   return `${row}|${col}|${dir}`;
 }
 
+let candidates = [];
+function dfsCandidates(row, col, dir) {
+  let key = (r, c) => `${r}|${c}`;
+  let visited = new Set();
+  while (true) {
+    let k = key(row, col);
+    if (grid[row][col] === "." && !visited.has(k)) {
+      visited.add(k);
+      candidates.push([row, col]);
+    }
+
+    let [x, y] = dirMap[dir];
+    let xrow = row + x;
+    let ycol = col + y;
+
+    if (!inBounds(xrow, ycol)) {
+      return;
+    }
+
+    if (grid[xrow][ycol] === "#") {
+      dir = nextDir[dir];
+      continue;
+    }
+
+    row = xrow;
+    col = ycol;
+  }
+}
+
+dfsCandidates(srow, scol, "up");
+
 function dfs(row, col, dir) {
   let visited = new Set();
   while (true) {
@@ -84,18 +115,12 @@ function dfs(row, col, dir) {
   }
 }
 
-for (let row = 0; row < grid.length; row++) {
-  for (let col = 0; col < grid[0].length; col++) {
-    if (grid[row][col] !== ".") {
-      continue;
-    }
-
-    grid[row][col] = "#";
-    if (dfs(srow, scol, "up")) {
-      res += 1;
-    }
-    grid[row][col] = ".";
+for (let [row, col] of candidates) {
+  grid[row][col] = "#";
+  if (dfs(srow, scol, "up")) {
+    res += 1;
   }
+  grid[row][col] = ".";
 }
 
 console.log(res);
