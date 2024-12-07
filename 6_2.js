@@ -18,6 +18,8 @@ let grid = data
 
 let srow = 0;
 let scol = 0;
+let H = data.length;
+let W = data[0];
 
 for (let row = 0; row < grid.length; row++) {
   for (let col = 0; col < grid[0].length; col++) {
@@ -34,19 +36,12 @@ function inBounds(row, col) {
   return row >= 0 && row < grid.length && col >= 0 && col < grid[row].length;
 }
 
-let dirMap = {
-  up: [-1, 0],
-  left: [0, -1],
-  down: [1, 0],
-  right: [0, 1],
-};
-
-let nextDir = {
-  up: "right",
-  left: "up",
-  down: "left",
-  right: "down",
-};
+let dirs = [
+  [-1, 0],
+  [0, 1],
+  [1, 0],
+  [0, -1],
+];
 
 let res = 0;
 
@@ -65,7 +60,7 @@ function dfsCandidates(row, col, dir) {
       candidates.push([row, col]);
     }
 
-    let [x, y] = dirMap[dir];
+    let [x, y] = dirs[dir];
     let xrow = row + x;
     let ycol = col + y;
 
@@ -74,7 +69,7 @@ function dfsCandidates(row, col, dir) {
     }
 
     if (grid[xrow][ycol] === "#") {
-      dir = nextDir[dir];
+      dir = (dir + 1) % 4;
       continue;
     }
 
@@ -83,7 +78,7 @@ function dfsCandidates(row, col, dir) {
   }
 }
 
-dfsCandidates(srow, scol, "up");
+dfsCandidates(srow, scol, 0);
 
 function dfs(row, col, dir) {
   let visited = new Set();
@@ -97,7 +92,7 @@ function dfs(row, col, dir) {
       visited.add(kk);
     }
 
-    let [x, y] = dirMap[dir];
+    let [x, y] = dirs[dir];
     let xrow = row + x;
     let ycol = col + y;
 
@@ -106,7 +101,7 @@ function dfs(row, col, dir) {
     }
 
     if (grid[xrow][ycol] === "#") {
-      dir = nextDir[dir];
+      dir = (dir + 1) % 4;
       continue;
     }
 
@@ -117,7 +112,7 @@ function dfs(row, col, dir) {
 
 for (let [row, col] of candidates) {
   grid[row][col] = "#";
-  if (dfs(srow, scol, "up")) {
+  if (dfs(srow, scol, 0)) {
     res += 1;
   }
   grid[row][col] = ".";
